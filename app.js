@@ -5,6 +5,8 @@ import cors from "cors";
 import { LIMIT_JSON } from "./lib/constants.js";
 import { HttpCode } from "./lib/constants.js";
 
+import genderCategotriesRouter from "./routes/api/genderCategory/index.js";
+
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
@@ -14,6 +16,8 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json({ limit: LIMIT_JSON }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/gendercategories", genderCategotriesRouter);
 
 app.use((req, res) => {
     res
