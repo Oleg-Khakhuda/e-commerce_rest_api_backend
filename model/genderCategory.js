@@ -12,6 +12,10 @@ const GenderCategorySchema = new Schema({
         unique: true,
     },
     image: { type: String },
+    idFileCloud: {
+        type: String, 
+        default: null,
+    },
 },
 {
     versionKey: false,

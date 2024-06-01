@@ -1,11 +1,12 @@
 import repositoryGenderCategories from '../../repository/genderCategory.js'
 import { HttpCode } from "../../lib/constants.js";
 import convert from "../../convert.json" assert { type: "json" };
+import cloudStorage from "../../service/file-storage/cloud-storage.js";
+import { CLOUD_GENDER_FILES } from "../../lib/constants.js";
 
 const addGenderCategory = async (req, res) => {
     try {
         const file = req.file;
-
         const text = req.body.title;
         const str = text.replace(/[\s-]/g, '_').toLowerCase();
         const newName = str.split('').map(char => convert[char] || char).join('');
@@ -13,10 +14,12 @@ const addGenderCategory = async (req, res) => {
       const newCategory = await repositoryGenderCategories.addGenderCategory({
         ...req.body,
         slug: newName,
-        image: `http://localhost:7000/` + file.path,
+        image: file.path
       });
       if (newCategory) {
-        return res.status(HttpCode.CREATED).json(newCategory);
+        await cloudStorage(CLOUD_GENDER_FILES, file.path, newCategory)
+        const result = await repositoryGenderCategories.getGenderCategoriesById(newCategory.id);
+        return res.status(HttpCode.CREATED).json(result);
       }
     } catch (error) {
       res.status(HttpCode.NOT_FOUND).json({
