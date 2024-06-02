@@ -18,7 +18,7 @@ const addGenderCategory = async (req, res) => {
       });
       if (newCategory) {
         await cloudStorage(CLOUD_GENDER_FILES, file.path, newCategory)
-        const result = await repositoryGenderCategories.getGenderCategoriesById(newCategory.id);
+        const result = await repositoryGenderCategories.getGenderCategoryById(newCategory.id);
         return res.status(HttpCode.CREATED).json(result);
       }
     } catch (error) {
@@ -45,7 +45,25 @@ const getGenderCategories = async (req, res, next) => {
     }
 };
 
+const getGenderCategoryById = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+  
+      const category = await repositoryGenderCategories.getGenderCategoryById(id);
+      if (category) {
+        return res.status(HttpCode.OK).json(category);
+      }
+    } catch (error) {
+      res.status(HttpCode.NOT_FOUND).json({
+        status: "error",
+        code: HttpCode.NOT_FOUND,
+        message: "Щось пішло не так",
+      });
+    }
+  };
+
 export {
     addGenderCategory,
     getGenderCategories,
+    getGenderCategoryById,
 }

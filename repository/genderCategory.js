@@ -10,7 +10,7 @@ const getGenderCategories = async () => {
     return result;
 };
 
-const getGenderCategoriesById = async (id) => {
+const getGenderCategoryById = async (id) => {
   const result = await GenderCategories.find({_id: id});
   return result;
 };
@@ -23,6 +23,6 @@ const updateFile =  async (id, image, idFileCloud = null) => {
 export default {
     addGenderCategory,
     getGenderCategories,
-    getGenderCategoriesById,
+    getGenderCategoryById,
     updateFile,
 };
