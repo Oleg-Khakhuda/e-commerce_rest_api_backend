@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import { promisify } from 'util'
 import { unlink } from 'fs/promises'
 import GenderCategories from '../../repository/genderCategory.js'
+import { error } from 'console'
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -10,9 +11,8 @@ cloudinary.config({
   secure: true,
 })
 
-const cloudStorage = async (cloudFolders, file, owner) => {
+const save = async (cloudFolders, filePath, owner) => {
   const genderCategoryId = owner.id
-  const filePath = file
   const idFileCloud = owner.idFileCloud
   const folderFiles = cloudFolders
   const uploadCloud = promisify(cloudinary.uploader.upload)
@@ -42,4 +42,32 @@ const removeUploadFile = async (filePath) => {
   }
 }
 
-export default cloudStorage;
+const removeFiles = async (cloudFolder, idFileCloud) => {
+  const deleteFiles = promisify(cloudinary.uploader.destroy)
+  const filePath = `${cloudFolder}/${idFileCloud}`
+  const result = deleteFiles(filePath)
+.then((data) => {
+  return data
+}).catch((error) => {
+  console.log(error)
+});
+return result
+};
+
+const removeFolder = async (cloudFolder, idFolderCloud) => {
+  const deleteFolder = promisify(cloudinary.api.delete_folder)
+  const folderPath = `${cloudFolder}/${idFolderCloud}`
+  const result = deleteFolder(folderPath)
+.then((data) => {
+  return data
+}).catch((error) => {
+  console.log(error)
+});
+return result
+};
+
+export default {
+  save, 
+  removeFiles, 
+  removeFolder
+};

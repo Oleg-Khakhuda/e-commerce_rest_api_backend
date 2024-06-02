@@ -2,7 +2,7 @@ import repositoryGenderCategories from '../../repository/genderCategory.js'
 import { HttpCode } from "../../lib/constants.js";
 import convert from "../../convert.json" assert { type: "json" };
 import cloudStorage from "../../service/file-storage/cloud-storage.js";
-import { CLOUD_GENDER_FILES } from "../../lib/constants.js";
+import { CLOUD_GENDER_FOLDER } from "../../lib/constants.js";
 
 const addGenderCategory = async (req, res) => {
     try {
@@ -17,9 +17,11 @@ const addGenderCategory = async (req, res) => {
         image: file.path
       });
       if (newCategory) {
-        await cloudStorage(CLOUD_GENDER_FILES, file.path, newCategory)
+        const fileUrl = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, newCategory)
         const result = await repositoryGenderCategories.getGenderCategoryById(newCategory.id);
-        return res.status(HttpCode.CREATED).json(result);
+        if (fileUrl && result) {
+          return res.status(HttpCode.CREATED).json(result);
+        }
       }
     } catch (error) {
       res.status(HttpCode.NOT_FOUND).json({
@@ -62,8 +64,32 @@ const getGenderCategoryById = async (req, res, next) => {
     }
   };
 
+  const removeGenderCategory = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      
+      const category = await repositoryGenderCategories.removeGenderCategory(id);
+      if (category) {
+        const removeFiles = await cloudStorage.removeFiles(CLOUD_GENDER_FOLDER, category.idFileCloud);
+        if (removeFiles) {
+          await cloudStorage.removeFolder(CLOUD_GENDER_FOLDER, category.id);
+        }
+        return res
+          .status(HttpCode.OK)
+          .json({ status: "success", code: HttpCode.OK, category });
+      }
+    } catch (error) {
+      res.status(HttpCode.NOT_FOUND).json({
+        status: "error",
+        code: HttpCode.NOT_FOUND,
+        message: "Щось пішло не так",
+      });
+    }
+  };
+
 export {
     addGenderCategory,
     getGenderCategories,
     getGenderCategoryById,
+    removeGenderCategory,
 }
