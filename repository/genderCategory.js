@@ -20,20 +20,24 @@ const removeGenderCategory = async (categoryId) => {
   return result;
 };
 
+const updateGenderCategory = async (categoryId, body) => {
+  const result = await GenderCategories.findByIdAndUpdate(
+    categoryId,
+    { ...body },
+    { new: true }
+  );
+  return result;
+};
+
 const updateFile =  async (id, image, idFileCloud = null) => {
   return await GenderCategories.updateOne({ _id: id }, { image, idFileCloud })
 };
-
-const deleteFile =  async (id, image, idFileCloud = null) => {
-  return await GenderCategories.updateOne({ _id: id }, { image, idFileCloud })
-};
-  
 
 export default {
     addGenderCategory,
     getGenderCategories,
     getGenderCategoryById,
     removeGenderCategory,
-    deleteFile,
+    updateGenderCategory,
     updateFile,
 };

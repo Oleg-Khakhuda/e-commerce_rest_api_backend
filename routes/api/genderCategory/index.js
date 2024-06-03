@@ -3,7 +3,8 @@ import {
     getGenderCategories, 
     addGenderCategory,
     removeGenderCategory, 
-    getGenderCategoryById 
+    getGenderCategoryById,
+    updateGenderCategory 
 } from "../../../controllers/genderCategories/index.js";
 import { upload } from "../../../middlewares/upload.js";
 
@@ -11,8 +12,12 @@ const router = new Router();
 
 router.get('/', getGenderCategories);
 router.get("/:id", getGenderCategoryById);
-router.delete("/:id", removeGenderCategory);
+router.delete("/delete/:id", removeGenderCategory);
 router.post('/', upload.single("image"),
-addGenderCategory)
+addGenderCategory);
+router.put("/update/:id",
+    upload.single("image"),
+    updateGenderCategory
+  );
 
 export default router;
