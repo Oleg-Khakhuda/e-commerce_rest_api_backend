@@ -10,14 +10,15 @@ const addGenderCategory = async (req, res) => {
         const text = req.body.title;
         const str = text.replace(/[\s-]/g, '_').toLowerCase();
         const newName = str.split('').map(char => convert[char] || char).join('');
-
+        
       const newCategory = await repositoryGenderCategories.addGenderCategory({
         ...req.body,
         slug: newName,
         image: file.path
       });
       if (newCategory) {
-        const fileUrl = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, newCategory.id)
+        const {fileUrl, returnedIdFileCloud} = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, newCategory.id)
+        await repositoryGenderCategories.updateFile(newCategory.id, fileUrl, returnedIdFileCloud)
         const result = await repositoryGenderCategories.getGenderCategoryById(newCategory.id);
         if (fileUrl && result) {
           return res.status(HttpCode.CREATED).json(result);
@@ -100,19 +101,16 @@ const getGenderCategoryById = async (req, res, next) => {
         if (genderCategory) {
           const removeFiles = await cloudStorage.removeFiles(genderCategory[0].idFileCloud);
             if (removeFiles) {
-              const removeFolder = await cloudStorage.removeFolder(CLOUD_GENDER_FOLDER, genderCategory[0].id);
-              if (removeFolder) {
-                const updateFile = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, genderCategory[0].id);
-                const category = await repositoryGenderCategories.updateGenderCategory(id, {
-                  ...req.body,
-                  slug: newName,
-                  image: updateFile,
-            });
-            if (category) {
-              return res.status(HttpCode.OK).json(category);
+              const updateFile = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, genderCategory[0].id);
+              const category = await repositoryGenderCategories.updateGenderCategory(id, {
+                ...req.body,
+                slug: newName,
+                image: updateFile,
+              });
+              if (category) {
+                return res.status(HttpCode.OK).json(category);
             }
-              }
-        }
+          }
         }
       }
 

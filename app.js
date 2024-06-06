@@ -6,6 +6,7 @@ import { LIMIT_JSON } from "./lib/constants.js";
 import { HttpCode } from "./lib/constants.js";
 
 import genderCategotriesRouter from "./routes/api/genderCategory/index.js";
+import categotriesRouter from './routes/api/category/index.js'
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json({ limit: LIMIT_JSON }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/gendercategories", genderCategotriesRouter);
+app.use("/api/categories", categotriesRouter)
 
 app.use((req, res) => {
     res

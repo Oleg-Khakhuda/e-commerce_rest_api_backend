@@ -1,7 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { promisify } from 'util'
 import { unlink } from 'fs/promises'
-import GenderCategories from '../../repository/genderCategory.js'
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -19,12 +18,10 @@ const save = async (cloudFolders, filePath, ownerId) => {
       public_id: idFileCloud,
       folder: `${cloudFolders}/${ownerId}`,
     })
-
-  await GenderCategories.updateFile(ownerId, fileUrl, returnedIdFileCloud)
   
   await removeUploadFile(filePath)
 
-  return fileUrl
+  return {fileUrl, returnedIdFileCloud}
 }
 
 const removeUploadFile = async (filePath) => {
