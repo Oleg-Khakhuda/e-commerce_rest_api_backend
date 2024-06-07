@@ -22,7 +22,11 @@ const addCategory = async (req, res) => {
         await repositoryCategories.updateFile(newCategory.id, fileUrl, returnedIdFileCloud)
         const result = await repositoryCategories.getCategoryById(newCategory.id);
         if (fileUrl && result) {
-          return res.status(HttpCode.CREATED).json(result);
+          return res.status(HttpCode.CREATED).json({
+            status: "success", 
+            code: HttpCode.OK, 
+            result
+        });
         }
       }
     } catch (error) {
@@ -34,6 +38,114 @@ const addCategory = async (req, res) => {
     }
   };
 
+const getCategoryById = async (req, res, next) => {
+try {
+    const { id } = req.params;
+    const category = await repositoryCategories.getCategoryById(id);
+    if (category) {
+    return res.status(HttpCode.OK).json({status: "success", code: HttpCode.OK, category});
+    }
+} catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+    status: "error",
+    code: HttpCode.NOT_FOUND,
+    message: "Щось пішло не так",
+    });
+}
+};
+
+const removeCategory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const category = await repositoryCategories.removeCategory(id);
+        if (category) {
+        const removeFiles = await cloudStorage.removeFiles(category.idFileCloud);
+        if (removeFiles) {
+            await cloudStorage.removeFolder(CLOUD_CATEGORY_FOLDER, category.id);
+        }
+        return res
+            .status(HttpCode.OK)
+            .json({ status: "success", code: HttpCode.OK, category });
+        }
+    } catch (error) {
+        res.status(HttpCode.NOT_FOUND).json({
+        status: "error",
+        code: HttpCode.NOT_FOUND,
+        message: "Щось пішло не так",
+        });
+    }
+};
+
+const updateCategory = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const file = req.file;
+      const text = req.body.title;
+      const str = text.replace(/[\s-]/g, '_').toLowerCase();
+      const newName = str.split('').map(char => convert[char] || char).join('');
+  
+      const category = await repositoryCategories.getCategoryById(id);
+       
+      if (file && category) {
+            await cloudStorage.removeFiles(category[0].idFileCloud);      
+            const {fileUrl, returnedIdFileCloud} = await cloudStorage.save(CLOUD_CATEGORY_FOLDER, file.path, category[0].id);
+            await repositoryCategories.updateFile(category[0].id, fileUrl, returnedIdFileCloud)
+            const updateCategory = await repositoryCategories.updateCategory(id, {
+            ...req.body,
+            slug: newName,
+            image: fileUrl,
+            });
+            if (updateCategory) {
+            return res.status(HttpCode.OK).json({
+                status: "success", 
+                code: HttpCode.OK, 
+                updateCategory
+            });
+        }  
+      }
+
+      const updateCategory = await repositoryCategories.updateCategory(
+        id, {...req.body, slug: newName}   
+      );
+      if (updateCategory) {
+        return res.status(HttpCode.OK).json({
+            status: "success", 
+            code: HttpCode.OK, 
+            updateCategory
+        });
+      }
+    } catch (error) {
+      res.status(HttpCode.NOT_FOUND).json({
+        status: "error",
+        code: HttpCode.NOT_FOUND,
+        message: "Щось пішло не так",
+      });
+    }
+};
+
+const getCategories = async (req, res, next) => {
+    try {
+        const categories = await repositoryCategories.getCategories();
+        if (categories) {
+        return res.status(HttpCode.OK).json({
+            status: "success", 
+            code: HttpCode.OK, 
+            categories
+        });
+        }
+    } catch (error) {
+        res.status(HttpCode.NOT_FOUND).json({
+        status: "error",
+        code: HttpCode.NOT_FOUND,
+        message: "Щось пішло не так",
+        });
+    }
+};
+
 export {
     addCategory,
+    getCategoryById,
+    removeCategory,
+    updateCategory,
+    getCategories,
 }

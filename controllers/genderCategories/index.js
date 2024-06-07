@@ -96,29 +96,27 @@ const getGenderCategoryById = async (req, res, next) => {
       const str = text.replace(/[\s-]/g, '_').toLowerCase();
       const newName = str.split('').map(char => convert[char] || char).join('');
   
-      if (file) {
-        const genderCategory = await repositoryGenderCategories.getGenderCategoryById(id);
-        if (genderCategory) {
-          const removeFiles = await cloudStorage.removeFiles(genderCategory[0].idFileCloud);
-            if (removeFiles) {
-              const updateFile = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, genderCategory[0].id);
-              const category = await repositoryGenderCategories.updateGenderCategory(id, {
-                ...req.body,
-                slug: newName,
-                image: updateFile,
-              });
-              if (category) {
-                return res.status(HttpCode.OK).json(category);
-            }
+      const genderCategory = await repositoryGenderCategories.getGenderCategoryById(id);
+
+      if (file && genderCategory) {
+          await cloudStorage.removeFiles(genderCategory[0].idFileCloud);
+          const {fileUrl, returnedIdFileCloud} = await cloudStorage.save(CLOUD_GENDER_FOLDER, file.path, genderCategory[0].id);
+          await repositoryGenderCategories.updateFile(genderCategory[0].id, fileUrl, returnedIdFileCloud)
+          const updateCategory = await repositoryGenderCategories.updateGenderCategory(id, {
+            ...req.body,
+            slug: newName,
+            image: fileUrl,
+          });
+          if (updateCategory) {
+            return res.status(HttpCode.OK).json(updateCategory);
           }
-        }
       }
 
-      const category = await repositoryGenderCategories.updateGenderCategory(
+      const updateCategory = await repositoryGenderCategories.updateGenderCategory(
         id, {...req.body, slug: newName}   
       );
-      if (category) {
-        return res.status(HttpCode.OK).json(category);
+      if (updateCategory) {
+        return res.status(HttpCode.OK).json(updateCategory);
       }
     } catch (error) {
       res.status(HttpCode.NOT_FOUND).json({

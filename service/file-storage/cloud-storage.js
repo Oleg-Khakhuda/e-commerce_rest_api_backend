@@ -10,6 +10,7 @@ cloudinary.config({
 })
 
 const save = async (cloudFolders, filePath, ownerId) => {
+  console.log((cloudFolders, filePath, ownerId));
   const idFileCloud = null
   const uploadCloud = promisify(cloudinary.uploader.upload)
 

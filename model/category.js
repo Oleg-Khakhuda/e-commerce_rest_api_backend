@@ -7,12 +7,10 @@ const CategorySchema = new Schema(
       type: String,
       require: true,
     },
-    image: {
-       imgUrl: { type: String },
-       idFileCloud: {
-        type: String, 
-        default: null,
-    },
+    image: { type: String },
+    idFileCloud: {
+      type: String, 
+      default: null,
     },
     slug: {
       type: String,
