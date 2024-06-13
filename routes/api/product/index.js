@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addProduct,
   getProductById,
+  removeProduct,
 } from "../../../controllers/products/index.js";
 import { upload } from "../../../middlewares/upload.js";
 
@@ -13,5 +14,6 @@ router.post(
     addProduct
 );
 router.get("/:id", getProductById);
+router.delete("/delete/:id", removeProduct);
 
 export default router;

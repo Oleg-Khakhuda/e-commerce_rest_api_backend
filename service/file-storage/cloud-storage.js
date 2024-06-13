@@ -33,8 +33,8 @@ const removeUploadFile = async (filePath) => {
 }
 
 const removeFiles = async (idFileCloud) => {
-  const deleteFiles = promisify(cloudinary.api.destroy)
-  const result = deleteFiles([idFileCloud])
+  const deleteFiles = promisify(cloudinary.uploader.destroy)
+  const result = deleteFiles(idFileCloud)
 .then((data) => {
   return data
 }).catch((error) => {

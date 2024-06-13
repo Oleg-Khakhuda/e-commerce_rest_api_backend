@@ -61,9 +61,37 @@ const addProduct = async (req, res) => {
         message: "Щось пішло не так",
       });
     }
-  };
+};
+
+const removeProduct = async (req, res, next) => {
+  try {
+      const { id } = req.params;
+      const product = await repositoryProducts.removeProduct(id);
+      if (product) {
+        const images = product.image;
+        for(let image of images) {
+          await cloudStorage.removeFiles(image.idFileCloud);
+          }
+        await cloudStorage.removeFolder(CLOUD_PRODUCT_FOLDER, product.id);
+        return res
+            .status(HttpCode.OK)
+            .json({ 
+              status: "success", 
+              code: HttpCode.OK,
+               message: "Продукт успішно видалено" 
+              });
+      }
+  } catch (error) {
+      res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: "Щось пішло не так",
+      });
+    }
+};
 
 export {
     addProduct,
     getProductById,
+    removeProduct,
 };

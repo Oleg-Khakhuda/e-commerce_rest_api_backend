@@ -30,7 +30,10 @@ const updateGenderCategory = async (categoryId, body) => {
 };
 
 const updateFile =  async (id, image, idFileCloud = null) => {
-  return await GenderCategories.updateOne({ _id: id }, { image, idFileCloud })
+  return await GenderCategories.findByIdAndUpdate(
+    { _id: id }, 
+    { image, idFileCloud }
+  )
 };
 
 export default {

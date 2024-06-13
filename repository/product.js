@@ -20,10 +20,16 @@ const updateFile =  async (id, url, idFileCloud = null) => {
         { _id: id }, 
         { $push: {image: {url, idFileCloud}}
     })
-  };
+};
+
+const removeProduct = async (productId) => {
+    const result = await Product.findOneAndDelete({ _id: productId });
+    return result;
+};
 
 export default {
     addProduct,
     getProductById,
     updateFile,
+    removeProduct,
 };

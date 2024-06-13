@@ -15,7 +15,7 @@ const getCategoryById = async (id) => {
   };
 
 const updateFile =  async (id, image, idFileCloud = null) => {
-    return await Category.updateOne(
+    return await Category.findByIdAndUpdate(
         { _id: id }, 
         {image, idFileCloud}
     )
