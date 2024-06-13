@@ -21,7 +21,11 @@ const addGenderCategory = async (req, res) => {
         await repositoryGenderCategories.updateFile(newCategory.id, fileUrl, returnedIdFileCloud)
         const result = await repositoryGenderCategories.getGenderCategoryById(newCategory.id);
         if (fileUrl && result) {
-          return res.status(HttpCode.CREATED).json(result);
+          return res.status(HttpCode.CREATED).json({
+            status: "success", 
+            code: HttpCode.OK, 
+            result
+        });
         }
       }
     } catch (error) {
@@ -37,7 +41,11 @@ const getGenderCategories = async (req, res, next) => {
     try {
         const categories = await repositoryGenderCategories.getGenderCategories();
         if (categories) {
-        return res.status(HttpCode.OK).json(categories);
+        return res.status(HttpCode.OK).json({
+          status: "success", 
+          code: HttpCode.OK, 
+          categories
+        });
         }
     } catch (error) {
         res.status(HttpCode.NOT_FOUND).json({
@@ -54,7 +62,11 @@ const getGenderCategoryById = async (req, res, next) => {
   
       const category = await repositoryGenderCategories.getGenderCategoryById(id);
       if (category) {
-        return res.status(HttpCode.OK).json(category);
+        return res.status(HttpCode.OK).json({
+          status: "success", 
+          code: HttpCode.OK, 
+          category
+        });
       }
     } catch (error) {
       res.status(HttpCode.NOT_FOUND).json({
@@ -108,7 +120,11 @@ const getGenderCategoryById = async (req, res, next) => {
             image: fileUrl,
           });
           if (updateCategory) {
-            return res.status(HttpCode.OK).json(updateCategory);
+            return res.status(HttpCode.OK).json({
+              status: "success", 
+              code: HttpCode.OK, 
+              updateCategory
+            });
           }
       }
 
@@ -116,7 +132,11 @@ const getGenderCategoryById = async (req, res, next) => {
         id, {...req.body, slug: newName}   
       );
       if (updateCategory) {
-        return res.status(HttpCode.OK).json(updateCategory);
+        return res.status(HttpCode.OK).json({
+          status: "success", 
+          code: HttpCode.OK, 
+          updateCategory
+        });
       }
     } catch (error) {
       res.status(HttpCode.NOT_FOUND).json({

@@ -7,10 +7,9 @@ cloudinary.config({
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_API_SECRET,
   secure: true,
-})
+});
 
 const save = async (cloudFolders, filePath, ownerId) => {
-  console.log((cloudFolders, filePath, ownerId));
   const idFileCloud = null
   const uploadCloud = promisify(cloudinary.uploader.upload)
 
@@ -23,7 +22,7 @@ const save = async (cloudFolders, filePath, ownerId) => {
   await removeUploadFile(filePath)
 
   return {fileUrl, returnedIdFileCloud}
-}
+};
 
 const removeUploadFile = async (filePath) => {
   try {
@@ -34,14 +33,14 @@ const removeUploadFile = async (filePath) => {
 }
 
 const removeFiles = async (idFileCloud) => {
-  const deleteFiles = promisify(cloudinary.api.delete_resources)
+  const deleteFiles = promisify(cloudinary.api.destroy)
   const result = deleteFiles([idFileCloud])
 .then((data) => {
   return data
 }).catch((error) => {
   console.log(error)
 });
-return result
+return result;
 };
 
 const removeFolder = async (cloudFolder, idFolderCloud) => {
@@ -53,7 +52,7 @@ const removeFolder = async (cloudFolder, idFolderCloud) => {
 }).catch((error) => {
   console.log(error)
 });
-return result
+return result;
 };
 
 export default {
