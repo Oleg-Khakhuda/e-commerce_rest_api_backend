@@ -16,6 +16,7 @@ const getProductById = async (productId) => {
 }
 
 const updateFile =  async (id, url, idFileCloud = null) => {
+    console.log(id, url, idFileCloud);
     return await Product.findByIdAndUpdate(
         { _id: id }, 
         { $push: {image: {url, idFileCloud}}
@@ -27,9 +28,19 @@ const removeProduct = async (productId) => {
     return result;
 };
 
+const updateProduct = async (productId ,body) => {
+    const result = await Product.findByIdAndUpdate(
+        productId,
+        { ...body },
+        { new: true } 
+    );
+    return result;
+};
+
 export default {
     addProduct,
     getProductById,
     updateFile,
     removeProduct,
+    updateProduct,
 };

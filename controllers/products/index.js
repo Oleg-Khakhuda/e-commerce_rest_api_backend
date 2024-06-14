@@ -78,8 +78,8 @@ const removeProduct = async (req, res, next) => {
             .json({ 
               status: "success", 
               code: HttpCode.OK,
-               message: "Продукт успішно видалено" 
-              });
+              message: "Продукт успішно видалено" 
+            });
       }
   } catch (error) {
       res.status(HttpCode.NOT_FOUND).json({
@@ -90,8 +90,57 @@ const removeProduct = async (req, res, next) => {
     }
 };
 
+const updateProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const files = req.files;
+    const text = req.body.name;
+    const str = text.replace(/[\s-]/g, '_').toLowerCase();
+    const newName = str.split('').map(char => convert[char] || char).join('');
+
+    const product = await repositoryProducts.getProductById(id);
+    
+    if (files && product) {     
+          const updateProduct = await repositoryProducts.updateProduct(id, {
+          ...req.body,
+          slug: newName,
+          });
+          if (updateProduct) {
+            for (const file of files) {
+              const path = file.path;
+              const {fileUrl, returnedIdFileCloud} = await cloudStorage.save(CLOUD_PRODUCT_FOLDER, path, product.id);
+              await repositoryProducts.updateFile(product.id, fileUrl, returnedIdFileCloud)
+            }; 
+          return res.status(HttpCode.OK).json({
+              status: "success", 
+              code: HttpCode.OK, 
+              updateProduct
+          });
+      }  
+    }
+
+    const updateProduct = await repositoryProducts.updateProduct(
+      id, {...req.body, slug: newName}   
+    );
+    if (updateProduct) {
+      return res.status(HttpCode.OK).json({
+          status: "success", 
+          code: HttpCode.OK, 
+          updateProduct
+      });
+    }
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: "Щось пішло не так",
+    });
+  }
+};
+
 export {
     addProduct,
     getProductById,
     removeProduct,
+    updateProduct,
 };
