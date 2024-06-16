@@ -4,19 +4,63 @@ import convert from "../../convert.json" assert { type: "json" };
 import { CLOUD_PRODUCT_FOLDER } from "../../lib/constants.js";
 import cloudStorage from '../../service/file-storage/cloud-storage.js';
 
+const getAllProducts = async (req, res) => {
+  try {
+    const products = await repositoryProducts.getAllProducts();
+        if (products) {
+        return res.status(HttpCode.OK).json({
+            status: "success", 
+            code: HttpCode.OK, 
+            products
+        });
+        }
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: "Щось пішло не так",
+      });
+  }
+};
+
+const getProducts = async (req, res) => {
+  try {
+    // const {category: categoryId} = req.query;
+    // const {genderCategory: genderCategoryId} = req.query;
+    // console.log(req.query);
+    const products = await repositoryProducts.listProducts(req.query)
+    res.status(HttpCode.OK).json({ 
+      status: 'success', 
+      code: HttpCode.OK, 
+      data: products 
+    })
+
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: error.message,
+      });
+  }
+} 
+
 const addProduct = async (req, res) => {
     try {
         const categoryId = req.body.category;
         const genderCategoryId = req.body.genderCategory;
         const files = req.files;
+        const sizes = req.body.size;
         
         const text = req.body.name;
         const str = text.replace(/[\s-]/g, '_').toLowerCase();
         const newName = str.split('').map(char => convert[char] || char).join('');
+
+        const moreSize = sizes.map((size) => size);
    
         const newProduct = await repositoryProducts.addProduct(
             categoryId, genderCategoryId, {
             ...req.body,
+            size: moreSize,
             slug: newName
         });
         if (newProduct) {
@@ -99,7 +143,7 @@ const updateProduct = async (req, res, next) => {
     const newName = str.split('').map(char => convert[char] || char).join('');
 
     const product = await repositoryProducts.getProductById(id);
-    
+
     if (files && product) {     
           const updateProduct = await repositoryProducts.updateProduct(id, {
           ...req.body,
@@ -110,12 +154,13 @@ const updateProduct = async (req, res, next) => {
               const path = file.path;
               const {fileUrl, returnedIdFileCloud} = await cloudStorage.save(CLOUD_PRODUCT_FOLDER, path, product.id);
               await repositoryProducts.updateFile(product.id, fileUrl, returnedIdFileCloud)
-            }; 
-          return res.status(HttpCode.OK).json({
-              status: "success", 
-              code: HttpCode.OK, 
-              updateProduct
-          });
+            };
+            const updateProduct = await repositoryProducts.getProductById(id) 
+            return res.status(HttpCode.OK).json({
+                status: "success", 
+                code: HttpCode.OK, 
+                updateProduct
+            });
       }  
     }
 
@@ -139,8 +184,10 @@ const updateProduct = async (req, res, next) => {
 };
 
 export {
-    addProduct,
-    getProductById,
-    removeProduct,
-    updateProduct,
+  getProducts,
+  getAllProducts,
+  addProduct,
+  getProductById,
+  removeProduct,
+  updateProduct,
 };
