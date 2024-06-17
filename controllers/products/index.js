@@ -18,16 +18,13 @@ const getAllProducts = async (req, res) => {
     res.status(HttpCode.NOT_FOUND).json({
       status: "error",
       code: HttpCode.NOT_FOUND,
-      message: "Щось пішло не так",
+      message: error.message,
       });
   }
 };
 
 const getProducts = async (req, res) => {
   try {
-    // const {category: categoryId} = req.query;
-    // const {genderCategory: genderCategoryId} = req.query;
-    // console.log(req.query);
     const products = await repositoryProducts.listProducts(req.query)
     res.status(HttpCode.OK).json({ 
       status: 'success', 
@@ -82,7 +79,7 @@ const addProduct = async (req, res) => {
       res.status(HttpCode.NOT_FOUND).json({
         status: "error",
         code: HttpCode.NOT_FOUND,
-        message: "Щось пішло не так",
+        message: error.message,
       });
     }
   };
@@ -102,7 +99,7 @@ const addProduct = async (req, res) => {
       res.status(HttpCode.NOT_FOUND).json({
         status: "error",
         code: HttpCode.NOT_FOUND,
-        message: "Щось пішло не так",
+        message: error.message,
       });
     }
 };
@@ -129,7 +126,7 @@ const removeProduct = async (req, res, next) => {
       res.status(HttpCode.NOT_FOUND).json({
       status: "error",
       code: HttpCode.NOT_FOUND,
-      message: "Щось пішло не так",
+      message: error.message,
       });
     }
 };
@@ -178,10 +175,37 @@ const updateProduct = async (req, res, next) => {
     res.status(HttpCode.NOT_FOUND).json({
       status: "error",
       code: HttpCode.NOT_FOUND,
-      message: "Щось пішло не так",
+      message: error.message,
     });
   }
 };
+
+const removeProductImage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const {public_id: idFileCloud} = req.query;
+    const deleteImage = await cloudStorage.removeFiles(idFileCloud);
+    if (deleteImage) {
+      const product = await repositoryProducts.getProductById(id);
+      const productImage = product.image;
+      const updatedImageArray = productImage.filter(object => object.idFileCloud !== idFileCloud);
+      const updateProduct = await repositoryProducts.updateProduct(id, {...req.body, image: updatedImageArray});
+      if (updateProduct) {
+        return res.status(HttpCode.OK).json({
+            status: "success", 
+            code: HttpCode.OK, 
+            updateProduct
+        });
+      }
+    }
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: error.message,
+    });
+  }
+}
 
 export {
   getProducts,
@@ -190,4 +214,5 @@ export {
   getProductById,
   removeProduct,
   updateProduct,
+  removeProductImage,
 };

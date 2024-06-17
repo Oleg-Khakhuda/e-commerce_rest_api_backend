@@ -6,6 +6,7 @@ import {
   getProductById,
   removeProduct,
   updateProduct,
+  removeProductImage,
 } from "../../../controllers/products/index.js";
 import { upload } from "../../../middlewares/upload.js";
 
@@ -20,6 +21,7 @@ router.post(
 );
 router.get("/:id", getProductById);
 router.delete("/delete/:id", removeProduct);
+router.put("/deleteImage/:id", removeProductImage);
 router.put("/update/:id",
   upload.array("image", 10),
   updateProduct
