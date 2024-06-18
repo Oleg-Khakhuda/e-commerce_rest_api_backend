@@ -7,15 +7,16 @@ const getAllProducts = async () => {
     return {total, data};
 };
 
-const listProducts = async (
-    {sortBy, 
+const listProducts = async ({
+    sortBy, 
     sortByDesc, 
     filter, 
     limit = 10, 
-    skip = 0}
-) => {
+    skip = 0
+}) => {
     // const sortCriteria = sortBy ? { [sortBy]: sortByDesc ? -1 : 1 } : null;
     let sortCriteria = null;
+    
     const total = await Product.find().countDocuments();
     let result = Product.find();
     
@@ -29,7 +30,33 @@ const listProducts = async (
         result = result.select(filter.split('|').join(' '))
     }
 
-    result = await result.sort(sortCriteria).limit(Number(limit)).skip(Number(skip))
+    result = await result.sort(sortCriteria || {createdAt: -1}).limit(Number(limit)).skip(Number(skip))
+      
+    return {total, limit, products: result}
+};
+
+const listProductsByCategory = async (id, {
+    sortBy, 
+    sortByDesc, 
+    filter, 
+    limit = 10, 
+    skip = 0
+}) => {
+    let sortCriteria = null;
+    const total = await Product.find({category: id}).countDocuments();
+    let result = Product.find({category: id});
+    
+    if (sortBy) {
+        sortCriteria = { [`${sortBy}`]: 1 }
+    }
+    if (sortByDesc) {
+        sortCriteria = { [`${sortByDesc}`]: -1 }
+    }
+    if (filter) {
+        result = result.select(filter.split('|').join(' '))
+    }
+
+    result = await result.sort(sortCriteria || {createdAt: -1}).limit(Number(limit)).skip(Number(skip))
       
       return {total, limit, products: result}
 };
@@ -46,7 +73,8 @@ const addProduct = async (categoryId, genderCategoryId, body) => {
 const getProductById = async (productId) => {
     const product = await Product.findOne({_id: productId});
     return product;
-}
+};
+
 
 const updateFile =  async (id, url, idFileCloud = null) => {
     return await Product.findByIdAndUpdate(
@@ -71,6 +99,7 @@ const updateProduct = async (productId ,body) => {
 
 export default {
     listProducts,
+    listProductsByCategory,
     getAllProducts,
     addProduct,
     getProductById,

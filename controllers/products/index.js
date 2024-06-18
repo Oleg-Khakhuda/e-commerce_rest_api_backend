@@ -25,13 +25,14 @@ const getAllProducts = async (req, res) => {
 
 const getProducts = async (req, res) => {
   try {
-    const products = await repositoryProducts.listProducts(req.query)
-    res.status(HttpCode.OK).json({ 
-      status: 'success', 
-      code: HttpCode.OK, 
-      data: products 
-    })
-
+    const products = await repositoryProducts.listProducts(req.query);
+    if (products) {
+      res.status(HttpCode.OK).json({ 
+        status: 'success', 
+        code: HttpCode.OK, 
+        data: products 
+      })
+    }
   } catch (error) {
     res.status(HttpCode.NOT_FOUND).json({
       status: "error",
@@ -39,7 +40,27 @@ const getProducts = async (req, res) => {
       message: error.message,
       });
   }
-} 
+};
+
+const getProductsByCategory = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const products = await repositoryProducts.listProductsByCategory(id, req.query);
+    if (products) {
+      res.status(HttpCode.OK).json({ 
+        status: 'success', 
+        code: HttpCode.OK, 
+        data: products 
+      })
+    }
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: error.message,
+      });
+  }
+}; 
 
 const addProduct = async (req, res) => {
     try {
@@ -209,6 +230,7 @@ const removeProductImage = async (req, res, next) => {
 
 export {
   getProducts,
+  getProductsByCategory,
   getAllProducts,
   addProduct,
   getProductById,
