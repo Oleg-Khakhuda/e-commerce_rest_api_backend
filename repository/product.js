@@ -1,4 +1,3 @@
-import Category from "../model/category.js";
 import Product from "../model/product.js";
 
 const getAllProducts = async () => {
@@ -13,19 +12,12 @@ const listProducts = async ({
     filter, 
     limit = 10, 
     skip = 0
-}) => {
-    // const sortCriteria = sortBy ? { [sortBy]: sortByDesc ? -1 : 1 } : null;
-    let sortCriteria = null;
-    
+}) => {    
     const total = await Product.find().countDocuments();
     let result = Product.find();
-    
-    if (sortBy) {
-        sortCriteria = { [`${sortBy}`]: 1 }
-    }
-    if (sortByDesc) {
-        sortCriteria = { [`${sortByDesc}`]: -1 }
-    }
+
+    const sortCriteria = sort(sortBy, sortByDesc);
+   
     if (filter) {
         result = result.select(filter.split('|').join(' '))
     }
@@ -42,24 +34,52 @@ const listProductsByCategory = async (id, {
     limit = 10, 
     skip = 0
 }) => {
-    let sortCriteria = null;
     const total = await Product.find({category: id}).countDocuments();
     let result = Product.find({category: id});
-    
+
+    const sortCriteria = sort(sortBy, sortByDesc);
+   
+    if (filter) {
+        result = result.select(filter.split('|').join(' '))
+    }
+
+    result = await result.sort(sortCriteria || {createdAt: -1}).limit(Number(limit)).skip(Number(skip));
+      
+    return {total, limit, products: result};
+};
+
+const listProductsByGenderCategory = async (id, {
+    sortBy, 
+    sortByDesc, 
+    filter, 
+    limit = 10, 
+    skip = 0
+}) => {
+    const total = await Product.find({genderCategory: id}).countDocuments();
+    let result = Product.find({genderCategory: id});
+
+    const sortCriteria = sort(sortBy, sortByDesc);
+   
+    if (filter) {
+        result = result.select(filter.split('|').join(' '))
+    }
+
+    result = await result.sort(sortCriteria || {createdAt: -1}).limit(Number(limit)).skip(Number(skip));
+      
+    return {total, limit, products: result};
+};
+
+const sort = (sortBy, sortByDesc) => {
+    // const sortCriteria = sortBy ? { [sortBy]: sortByDesc ? -1 : 1 } : null;
+    let sortCriteria = null;
     if (sortBy) {
         sortCriteria = { [`${sortBy}`]: 1 }
     }
     if (sortByDesc) {
         sortCriteria = { [`${sortByDesc}`]: -1 }
     }
-    if (filter) {
-        result = result.select(filter.split('|').join(' '))
-    }
-
-    result = await result.sort(sortCriteria || {createdAt: -1}).limit(Number(limit)).skip(Number(skip))
-      
-      return {total, limit, products: result}
-};
+    return sortCriteria;
+}
 
 const addProduct = async (categoryId, genderCategoryId, body) => {
     const product = await Product.create({ 
@@ -100,6 +120,7 @@ const updateProduct = async (productId ,body) => {
 export default {
     listProducts,
     listProductsByCategory,
+    listProductsByGenderCategory,
     getAllProducts,
     addProduct,
     getProductById,

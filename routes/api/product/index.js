@@ -8,6 +8,7 @@ import {
   updateProduct,
   removeProductImage,
   getProductsByCategory,
+  getProductsByGenderCategory,
 } from "../../../controllers/products/index.js";
 import { upload } from "../../../middlewares/upload.js";
 
@@ -15,7 +16,8 @@ const router = new Router();
 
 router.get("/all", getAllProducts);
 router.get("/list/", getProducts);
-router.get("/search/:id", getProductsByCategory);
+router.get("/category/:id", getProductsByCategory);
+router.get("/genderCategory/:id", getProductsByGenderCategory);
 router.post(
     "/",
     upload.array("image", 10),

@@ -60,7 +60,27 @@ const getProductsByCategory = async (req, res) => {
       message: error.message,
       });
   }
-}; 
+};
+
+const getProductsByGenderCategory = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const products = await repositoryProducts.listProductsByGenderCategory(id, req.query);
+    if (products) {
+      res.status(HttpCode.OK).json({ 
+        status: 'success', 
+        code: HttpCode.OK, 
+        data: products 
+      })
+    }
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: "error",
+      code: HttpCode.NOT_FOUND,
+      message: error.message,
+      });
+  }
+};
 
 const addProduct = async (req, res) => {
     try {
@@ -231,6 +251,7 @@ const removeProductImage = async (req, res, next) => {
 export {
   getProducts,
   getProductsByCategory,
+  getProductsByGenderCategory,
   getAllProducts,
   addProduct,
   getProductById,
