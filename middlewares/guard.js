@@ -13,8 +13,12 @@ const verifyToken = token => {
 };
 
 const guard = async (req, res, next) => {
-  const token = req.get('authorization')?.split(' ')[1];
+  const authorization = req?.body?.headers?.Authorization?.split(' ')[1];
+  const token = authorization || req.get('authorization')?.split(' ')[1];
+  // console.log('token', token);
+
   const isValidToken = verifyToken(token);
+  // console.log('isValidToken', isValidToken);
   if (!isValidToken) {
     return res.status(HttpCode.UNAUTHORIZED).json({
       status: 'error',

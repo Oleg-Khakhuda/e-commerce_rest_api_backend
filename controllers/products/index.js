@@ -3,10 +3,31 @@ import { HttpCode } from '../../lib/constants.js';
 import convert from '../../convert.json' assert { type: 'json' };
 import { CLOUD_PRODUCT_FOLDER } from '../../lib/constants.js';
 import cloudStorage from '../../service/file-storage/cloud-storage.js';
+import { login } from '../auth/index.js';
 
 const getAllProducts = async (req, res) => {
   try {
     const products = await repositoryProducts.getAllProducts();
+    if (products) {
+      return res.status(HttpCode.OK).json({
+        status: 'success',
+        code: HttpCode.OK,
+        products,
+      });
+    }
+  } catch (error) {
+    res.status(HttpCode.NOT_FOUND).json({
+      status: 'error',
+      code: HttpCode.NOT_FOUND,
+      message: error.message,
+    });
+  }
+};
+
+const getNewProducts = async (req, res) => {
+  try {
+    const products = await repositoryProducts.getNewProducts();
+    // console.log('newproducts', products);
     if (products) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -44,8 +65,11 @@ const getProducts = async (req, res) => {
 
 const getProductsByCategory = async (req, res) => {
   try {
-    const { id } = req.params;
-    const products = await repositoryProducts.listProductsByCategory(id, req.query);
+    const { slug } = req.params;
+    // console.log(slug);
+
+    const products = await repositoryProducts.listProductsByCategory(slug, req.query);
+    // console.log(products);
     if (products) {
       res.status(HttpCode.OK).json({
         status: 'success',
@@ -64,8 +88,11 @@ const getProductsByCategory = async (req, res) => {
 
 const getProductsByGenderCategory = async (req, res) => {
   try {
-    const { id } = req.params;
-    const products = await repositoryProducts.listProductsByGenderCategory(id, req.query);
+    const { slug } = req.params;
+    // console.log('req.params', req.params);
+
+    const products = await repositoryProducts.listProductsByGenderCategory(slug, req.query);
+    // console.log(products);
     if (products) {
       res.status(HttpCode.OK).json({
         status: 'success',
@@ -84,11 +111,7 @@ const getProductsByGenderCategory = async (req, res) => {
 
 const addProduct = async (req, res) => {
   try {
-    const categoryId = req.body.category;
-    const genderCategoryId = req.body.genderCategory;
     const files = req.files;
-    const sizes = req.body.size;
-
     const text = req.body.name;
     const str = text.replace(/[\s-]/g, '_').toLowerCase();
     const newName = str
@@ -96,11 +119,8 @@ const addProduct = async (req, res) => {
       .map(char => convert[char] || char)
       .join('');
 
-    const moreSize = sizes.map(size => size);
-
-    const newProduct = await repositoryProducts.addProduct(categoryId, genderCategoryId, {
+    const newProduct = await repositoryProducts.addProduct({
       ...req.body,
-      size: moreSize,
       slug: newName,
     });
     if (newProduct) {
@@ -117,6 +137,7 @@ const addProduct = async (req, res) => {
       if (result) {
         return res.status(HttpCode.CREATED).json({
           status: 'success',
+          message: 'Продукт успішно додано',
           code: HttpCode.OK,
           result,
         });
@@ -134,7 +155,9 @@ const addProduct = async (req, res) => {
 const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
+
     const product = await repositoryProducts.getProductById(id);
+    // console.log(product);
     if (product) {
       return res.status(HttpCode.OK).json({
         status: 'success',
@@ -154,6 +177,8 @@ const getProductById = async (req, res, next) => {
 const removeProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(id);
+
     const product = await repositoryProducts.removeProduct(id);
     if (product) {
       const images = product.image;
@@ -165,6 +190,7 @@ const removeProduct = async (req, res, next) => {
         status: 'success',
         code: HttpCode.OK,
         message: 'Продукт успішно видалено',
+        product,
       });
     }
   } catch (error) {
@@ -181,6 +207,7 @@ const updateProduct = async (req, res, next) => {
     const { id } = req.params;
     const files = req.files;
     const text = req.body.name;
+    console.log(req.body);
     const str = text.replace(/[\s-]/g, '_').toLowerCase();
     const newName = str
       .split('')
@@ -208,6 +235,7 @@ const updateProduct = async (req, res, next) => {
         return res.status(HttpCode.OK).json({
           status: 'success',
           code: HttpCode.OK,
+          message: 'Продукт успішно оновлено',
           updateProduct,
         });
       }
@@ -221,6 +249,7 @@ const updateProduct = async (req, res, next) => {
       return res.status(HttpCode.OK).json({
         status: 'success',
         code: HttpCode.OK,
+        message: 'Продукт успішно оновлено',
         updateProduct,
       });
     }
@@ -237,11 +266,12 @@ const removeProductImage = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { public_id: idFileCloud } = req.query;
+
     const deleteImage = await cloudStorage.removeFiles(idFileCloud);
     if (deleteImage) {
       const product = await repositoryProducts.getProductById(id);
       const productImage = product.image;
-      const updatedImageArray = productImage.filter(object => object.idFileCloud !== idFileCloud);
+      const updatedImageArray = productImage.filter(file => file.idFileCloud !== idFileCloud);
       const updateProduct = await repositoryProducts.updateProduct(id, {
         ...req.body,
         image: updatedImageArray,
@@ -250,6 +280,7 @@ const removeProductImage = async (req, res, next) => {
         return res.status(HttpCode.OK).json({
           status: 'success',
           code: HttpCode.OK,
+          message: 'Зображення успішно видалено',
           updateProduct,
         });
       }
@@ -265,6 +296,7 @@ const removeProductImage = async (req, res, next) => {
 
 export {
   getProducts,
+  getNewProducts,
   getProductsByCategory,
   getProductsByGenderCategory,
   getAllProducts,

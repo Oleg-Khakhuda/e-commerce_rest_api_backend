@@ -9,6 +9,7 @@ import categoriesRouter from './routes/api/category/index.js';
 import productsRouter from './routes/api/product/index.js';
 import authRouter from './routes/api/auth/index.js';
 import usersRouter from './routes/api/user/index.js';
+import orderRouter from './routes/api/order/index.js';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/orders', orderRouter);
 
 app.use((req, res) => {
   res

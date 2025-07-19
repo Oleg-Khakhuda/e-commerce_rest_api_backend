@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   addCategory,
   getCategoryById,
+  getCategoryBySlugGenderCat,
   removeCategory,
   getCategories,
   updateCategory,
@@ -15,6 +16,7 @@ const router = new Router();
 
 router.post('/', [guard, roleAccess(Role.ADMIN)], upload.single('image'), addCategory);
 router.get('/:id', getCategoryById);
+router.get('/slug/:slug', getCategoryBySlugGenderCat);
 router.get('/', getCategories);
 router.delete('/delete/:id', [guard, roleAccess(Role.ADMIN)], removeCategory);
 router.put('/update/:id', [guard, roleAccess(Role.ADMIN)], upload.single('image'), updateCategory);

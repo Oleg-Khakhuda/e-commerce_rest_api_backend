@@ -4,13 +4,19 @@ import gravatar from 'gravatar';
 import { randomUUID } from 'crypto';
 import { Role } from '../lib/constants.js';
 
-const { Schema, model } = mongoose;
+const { Schema, SchemaTypes, model } = mongoose;
 
 const userSchema = new Schema(
   {
-    name: {
+    firstName: {
       type: String,
       default: 'Guest',
+    },
+    lastName: {
+      type: String,
+    },
+    phone: {
+      type: String,
     },
     password: {
       type: String,
@@ -18,13 +24,19 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
+      trim: true,
+      index: true,
+      sparse: true,
       required: [true, 'Email is required'],
       unique: true,
-      validate(value) {
-        const re = /\S+@\S+\.\S+/;
-        return re.test(String(value).trim().toLowerCase());
+      validate: {
+        validator: function (v) {
+          return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v);
+        },
+        message: props => `${props.value} is not a valid email!`,
       },
     },
+    // orders: [{ type: SchemaTypes.ObjectId, ref: 'order' }],
     role: {
       type: String,
       enum: {
@@ -40,13 +52,17 @@ const userSchema = new Schema(
     avatarUrl: {
       type: String,
       default: function () {
-        return gravatar.url(this.email, { s: '250' }, true);
+        return gravatar.url(this.email, { s: '250', d: '404' }, true);
       },
     },
     idAvatarCloud: {
       type: String,
       default: null,
     },
+    // isSendEmailVerify: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     verify: {
       type: Boolean,
       default: false,
@@ -57,6 +73,14 @@ const userSchema = new Schema(
       default: function () {
         return randomUUID();
       },
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

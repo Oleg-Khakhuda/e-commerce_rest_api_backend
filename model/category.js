@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
 
 const CategorySchema = new Schema(
@@ -9,7 +9,7 @@ const CategorySchema = new Schema(
     },
     image: { type: String },
     idFileCloud: {
-      type: String, 
+      type: String,
       default: null,
     },
     slug: {
@@ -19,7 +19,8 @@ const CategorySchema = new Schema(
     },
     genderCategory: {
       type: SchemaTypes.ObjectId,
-      ref: "genderCategory",
+      ref: 'genderCategory',
+      required: true,
     },
   },
   {
@@ -33,9 +34,9 @@ const CategorySchema = new Schema(
       },
     },
     toObject: { virtuals: true },
-  }
+  },
 );
 
-const Category = model("category", CategorySchema);
+const Category = model('category', CategorySchema);
 
 export default Category;

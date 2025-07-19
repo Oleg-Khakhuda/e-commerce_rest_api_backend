@@ -2,8 +2,10 @@ import Joi from 'joi';
 import { HttpCode } from '../../../lib/constants.js';
 
 const authSchema = Joi.object({
-  name: Joi.string().min(2).max(20),
-  email: Joi.string().email().required(),
+  firstName: Joi.string().min(2).max(20),
+  lastName: Joi.string().min(2).max(20),
+  phone: Joi.string().min(10).max(20),
+  email: Joi.string().email(),
   password: Joi.string().min(8).max(30).required(),
 });
 
