@@ -2,10 +2,10 @@
   "name": "e-commerce_rest_api_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./bin/server.js",
   "type": "module",
   "scripts": {
-    "start": "node -r dotenv/config --experimental-modules --experimental-specifier-resolution=node ./bin/server.js",
+    "start": "node ./bin/server.js",
     "start:dev": "nodemon -r dotenv/config --experimental-modules --es-module-specifier-resolution=node ./bin/server.js"
   },
   "keywords": [],
