@@ -1,9 +1,8 @@
 import repositoryProducts from '../../repository/product.js';
 import { HttpCode } from '../../lib/constants.js';
-import convert from '../../convert.json' assert { type: 'json' };
+import convert from '../../convert.json' with { type: 'json' };
 import { CLOUD_PRODUCT_FOLDER } from '../../lib/constants.js';
 import cloudStorage from '../../service/file-storage/cloud-storage.js';
-import { login } from '../auth/index.js';
 
 const getAllProducts = async (req, res) => {
   try {

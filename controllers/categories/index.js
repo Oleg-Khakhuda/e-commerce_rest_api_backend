@@ -1,6 +1,6 @@
 import repositoryCategories from '../../repository/category.js';
 import { HttpCode } from '../../lib/constants.js';
-import convert from '../../convert.json' assert { type: 'json' };
+import convert from '../../convert.json' with { type: 'json' };
 import cloudStorage from '../../service/file-storage/cloud-storage.js';
 import { CLOUD_CATEGORY_FOLDER } from '../../lib/constants.js';
 

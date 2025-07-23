@@ -1,6 +1,6 @@
 import repositoryGenderCategories from '../../repository/genderCategory.js';
 import { HttpCode } from '../../lib/constants.js';
-import convert from '../../convert.json' assert { type: 'json' };
+import convert from '../../convert.json' with { type: 'json' };
 import cloudStorage from '../../service/file-storage/cloud-storage.js';
 import { CLOUD_GENDER_FOLDER } from '../../lib/constants.js';
 
