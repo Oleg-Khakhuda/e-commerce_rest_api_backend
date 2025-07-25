@@ -50,10 +50,8 @@ const addOrder = async (req, res) => {
     res.status(HttpCode.CREATED).json({
       status: 'success',
       code: HttpCode.CREATED,
-      message: 'Order created',
-      data: {
-        order,
-      },
+      message: 'Замовлення успішно відправлено',
+      order,
     });
   } catch (error) {
     res.status(HttpCode.NOT_FOUND).json({
@@ -95,9 +93,7 @@ const getOrderById = async (req, res) => {
     res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
-      data: {
-        order,
-      },
+      order,
     });
   } catch (error) {
     res.status(HttpCode.NOT_FOUND).json({
@@ -122,9 +118,7 @@ const updateOrder = async (req, res) => {
     res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
-      data: {
-        order,
-      },
+      order,
     });
   } catch (error) {
     res.status(HttpCode.NOT_FOUND).json({
@@ -149,9 +143,7 @@ const deleteOrder = async (req, res) => {
     res.status(HttpCode.OK).json({
       status: 'success',
       code: HttpCode.OK,
-      data: {
-        order,
-      },
+      order,
     });
   } catch (error) {
     res.status(HttpCode.NOT_FOUND).json({

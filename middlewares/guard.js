@@ -15,6 +15,7 @@ const verifyToken = token => {
 const guard = async (req, res, next) => {
   const authorization = req?.body?.headers?.Authorization?.split(' ')[1];
   const token = authorization || req.get('authorization')?.split(' ')[1];
+  // console.log('authorization', authorization);
   // console.log('token', token);
 
   const isValidToken = verifyToken(token);
@@ -28,6 +29,7 @@ const guard = async (req, res, next) => {
   }
   const payload = jwt.decode(token);
   const user = await repositoryUsers.findById(payload.id);
+
   if (!user || user.token !== token) {
     return res.status(HttpCode.UNAUTHORIZED).json({
       status: 'error',

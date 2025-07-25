@@ -113,8 +113,8 @@ const removeGenderCategory = async (req, res, next) => {
 
 const updateGenderCategory = async (req, res, next) => {
   try {
-    // console.log(req.body);
-    // console.log(req.file);
+    console.log(req.body);
+    console.log(req.file);
     const { id } = req.params;
     const file = req.file;
     const text = req.body.title;
