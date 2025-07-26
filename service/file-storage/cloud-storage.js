@@ -45,7 +45,6 @@ const save = async (cloudFolders, fileBuffer, fileName, ownerId) => {
       },
     );
 
-    // pipe buffer
     uploadStream.end(fileBuffer);
   });
 };
