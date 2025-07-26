@@ -20,7 +20,7 @@ router.post('/', [guard, roleAccess(Role.ADMIN)], upload.single('image'), addGen
 router.put(
   '/update/:id',
   [guard, roleAccess(Role.ADMIN)],
-  upload.single('image'),
+  upload.single('file'),
   updateGenderCategory,
 );
 

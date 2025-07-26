@@ -22,7 +22,8 @@ const addGenderCategory = async (req, res) => {
     if (newCategory) {
       const { fileUrl, returnedIdFileCloud } = await cloudStorage.save(
         CLOUD_GENDER_FOLDER,
-        file.path,
+        req.file.buffer,
+        req.file.originalname,
         newCategory.id,
       );
       await repositoryGenderCategories.updateFile(newCategory.id, fileUrl, returnedIdFileCloud);
