@@ -35,22 +35,14 @@ app.use((req, res) => {
     .json({ status: 'error', code: HttpCode.NOT_FOUND, message: 'Not found' });
 });
 
-// app.use((err, req, res, next) => {
-//   console.error('❌ Error:', err);
-//   const statusCode = err.status || HttpCode.INTERNAL_SERVER_ERROR;
-//   const status = statusCode === HttpCode.INTERNAL_SERVER_ERROR ? 'fail' : 'error';
-//   res.status().json({
-//     status: status,
-//     code: statusCode,
-//     message: err.message,
-//   });
-// });
-
 app.use((err, req, res, next) => {
   console.error('❌ Error:', err);
-
-  res.status(err.status || HttpCode.INTERNAL_SERVER_ERROR).json({
-    message: err.message || 'Internal Server Error',
+  const statusCode = err.status || HttpCode.INTERNAL_SERVER_ERROR;
+  const status = statusCode === HttpCode.INTERNAL_SERVER_ERROR ? 'fail' : 'error';
+  res.status().json({
+    status: status,
+    code: statusCode,
+    message: err.message,
   });
 });
 
