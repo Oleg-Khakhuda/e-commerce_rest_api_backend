@@ -19,6 +19,6 @@ router.get('/:id', getCategoryById);
 router.get('/slug/:slug', getCategoryBySlugGenderCat);
 router.get('/', getCategories);
 router.delete('/delete/:id', [guard, roleAccess(Role.ADMIN)], removeCategory);
-router.put('/update/:id', [guard, roleAccess(Role.ADMIN)], upload.single('file'), updateCategory);
+router.put('/update/:id', [guard, roleAccess(Role.ADMIN)], upload.single('image'), updateCategory);
 
 export default router;

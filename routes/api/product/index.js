@@ -27,6 +27,11 @@ router.post('/', [guard, roleAccess(Role.ADMIN)], upload.array('image', 10), add
 router.get('/:id', getProductById);
 router.delete('/delete/:id', [guard, roleAccess(Role.ADMIN)], removeProduct);
 router.put('/deleteImage/:id', [guard, roleAccess(Role.ADMIN)], removeProductImage);
-router.put('/update/:id', [guard, roleAccess(Role.ADMIN)], upload.array('file', 10), updateProduct);
+router.put(
+  '/update/:id',
+  [guard, roleAccess(Role.ADMIN)],
+  upload.array('image', 10),
+  updateProduct,
+);
 
 export default router;
