@@ -1,4 +1,4 @@
-import multer from "multer";
+import multer from 'multer';
 const UPLOAD_DIR = process.env.UPLOAD_DIR;
 
 const storage = multer.diskStorage({
@@ -14,9 +14,12 @@ export const upload = multer({
   storage: storage,
   limits: { fileSize: 10000000 },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.includes("image")) {
+    if (file.mimetype.includes('image')) {
       return cb(null, true);
     }
-    cb(new Error("Формат файла не підтримується!"));
+    // cb(new Error("Формат файла не підтримується!"));
+    const error = new Error('Формат файла не підтримується!');
+    error.status = 400;
+    cb(error);
   },
 });
