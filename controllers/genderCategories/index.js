@@ -131,7 +131,8 @@ const updateGenderCategory = async (req, res, next) => {
       await cloudStorage.removeFiles(genderCategory[0].idFileCloud);
       const { fileUrl, returnedIdFileCloud } = await cloudStorage.save(
         CLOUD_GENDER_FOLDER,
-        file.path,
+        req.file.buffer,
+        req.file.originalname,
         genderCategory[0].id,
       );
       await repositoryGenderCategories.updateFile(

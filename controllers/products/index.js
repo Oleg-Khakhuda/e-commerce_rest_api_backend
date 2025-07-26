@@ -124,10 +124,10 @@ const addProduct = async (req, res) => {
     });
     if (newProduct) {
       for (const file of files) {
-        const path = file.path;
         const { fileUrl, returnedIdFileCloud } = await cloudStorage.save(
           CLOUD_PRODUCT_FOLDER,
-          path,
+          file.buffer,
+          file.originalname,
           newProduct.id,
         );
         await repositoryProducts.updateFile(newProduct.id, fileUrl, returnedIdFileCloud);
@@ -222,10 +222,10 @@ const updateProduct = async (req, res, next) => {
       });
       if (updateProduct) {
         for (const file of files) {
-          const path = file.path;
           const { fileUrl, returnedIdFileCloud } = await cloudStorage.save(
             CLOUD_PRODUCT_FOLDER,
-            path,
+            file.buffer,
+            file.originalname,
             product.id,
           );
           await repositoryProducts.updateFile(product.id, fileUrl, returnedIdFileCloud);

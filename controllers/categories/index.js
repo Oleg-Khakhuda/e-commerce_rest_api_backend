@@ -23,7 +23,8 @@ const addCategory = async (req, res) => {
     if (newCategory) {
       const { fileUrl, returnedIdFileCloud } = await cloudStorage.save(
         CLOUD_CATEGORY_FOLDER,
-        file.path,
+        req.file.buffer,
+        req.file.originalname,
         newCategory.id,
       );
       await repositoryCategories.updateFile(newCategory.id, fileUrl, returnedIdFileCloud);
@@ -105,7 +106,8 @@ const updateCategory = async (req, res, next) => {
       await cloudStorage.removeFiles(category[0].idFileCloud);
       const { fileUrl, returnedIdFileCloud } = await cloudStorage.save(
         CLOUD_CATEGORY_FOLDER,
-        file.path,
+        req.file.buffer,
+        req.file.originalname,
         category[0].id,
       );
       await repositoryCategories.updateFile(category[0].id, fileUrl, returnedIdFileCloud);
